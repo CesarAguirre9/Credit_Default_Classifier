@@ -24,19 +24,21 @@ This project replicates the core modeling step that a credit risk data scientist
 - **Target**: `SeriousDlqin2yrs` — 1 if the borrower went 90+ days past due within 2 years, 0 otherwise
 - **Class imbalance**: ~93.3% non-default / ~6.7% default
 
-Key features include revolving credit utilization, age, monthly income, debt ratio, and delinquency history across three severity buckets (30–59, 60–89, 90+ days past due).
+Key features include revolving credit utilization, age, monthly income, debt ratio, and delinquency history across three severity ranges (30–59, 60–89, 90+ days past due).
 
 ---
 
 ## Methodology
 
 ### 1. Exploratory Data Analysis
+
 - Target distribution (countplot with percentage labels)
 - Summary statistics and data type inspection
 - Correlation heatmap to identify multicollinearity
 - Feature distributions split by default status (density-normalized histplots)
 
 ### 2. Data Cleaning
+
 - Removed revolving utilization outliers > 200% (likely data entry errors)
 - Dropped 1 row with age = 0 (not a valid borrower)
 - Imputed `MonthlyIncome` and `NumberOfDependents` missing values with median
@@ -55,22 +57,25 @@ delinquency_severity = (30-59 days × 1) + (60-89 days × 2) + (90+ days × 3)
 The weights reflect escalating severity — consistent with how FICO's payment history component is constructed. Tree-based models retain the three original columns since they handle multicollinearity natively.
 
 This resulted in **two feature sets**:
+
 - `X_lr` (10 features): composite delinquency score replaces the three originals
 - `X_tree` (12 features): three original delinquency columns, no composite
 
 ### 4. Class Imbalance Handling
+
 - **Logistic Regression / Random Forest**: `class_weight='balanced'` — internally reweights each class inversely proportional to its frequency
 - **XGBoost**: `scale_pos_weight = 14` (ratio of negatives to positives) — equivalent effect for gradient boosting
 
 ### 5. Models
 
-| Model | Key Hyperparameters |
-|---|---|
-| Logistic Regression | `C=0.1`, `class_weight='balanced'`, `StandardScaler` pipeline |
-| Random Forest | `n_estimators=200`, `class_weight='balanced'` |
-| XGBoost | `n_estimators=200`, `learning_rate=0.10`, `max_depth=10`, `scale_pos_weight=14` |
+| Model               | Key Hyperparameters                                                             |
+| ------------------- | ------------------------------------------------------------------------------- |
+| Logistic Regression | `C=0.1`, `class_weight='balanced'`, `StandardScaler` pipeline                   |
+| Random Forest       | `n_estimators=200`, `class_weight='balanced'`                                   |
+| XGBoost             | `n_estimators=200`, `learning_rate=0.10`, `max_depth=10`, `scale_pos_weight=14` |
 
 ### 6. Evaluation
+
 - **AUC-ROC**: primary metric for imbalanced classification
 - **Precision-Recall curves + Average Precision**: measures performance across all thresholds, with a random-classifier baseline equal to the default rate (6.7%)
 - **Confusion matrix**: normalized by actual class to show true positive / false positive rates
@@ -133,7 +138,3 @@ Credit_Default_Classifier/
 Python · pandas · scikit-learn · XGBoost · seaborn · matplotlib
 
 ---
-
-## Author
-
-Cesar Martin — Finance & credit risk background (Citi), transitioning to Data Science.
