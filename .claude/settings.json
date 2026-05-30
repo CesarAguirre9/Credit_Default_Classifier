@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python -c ' *)"
+      "Bash(python -c ' *)",
+      "Bash(python -c \"import json; nb=json.load\\(open\\('credit_default_classifier.ipynb'\\)\\); [print\\(i, c['id'], repr\\(c['source'][:80]\\)\\) for i,c in enumerate\\(nb['cells']\\)]\")",
+      "Bash(python -c \"import json; nb=json.load\\(open\\('credit_default_classifier.ipynb'\\)\\); [print\\(i, c['id'], repr\\(c['source'][:60]\\)\\) for i,c in enumerate\\(nb['cells']\\)]\")",
+      "Bash(python -c \"import json; nb=json.load\\(open\\('credit_default_classifier.ipynb'\\)\\); print\\(nb['cells'][1]['id']\\)\")"
     ]
   }
 }
